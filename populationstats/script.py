@@ -1,10 +1,8 @@
-from dataclasses import dataclass
 import pymysql
 import click
 import plotly.express as px
 import pandas as pd
 import pickle
-from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 
@@ -70,6 +68,7 @@ def refresh_data(host, user, password, database, tablename, filename, startdate)
             }
             with open(filename, 'wb') as f:
                 pickle.dump(data, f)
+
 @cli.command()
 @click.option('--filename', default='data.pickle', help='Where the database data is stored')
 def generate_graph(filename):

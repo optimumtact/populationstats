@@ -19,3 +19,36 @@ Once this completes, you will have a local pickle file with the data from the da
     poetry run python populationstats/script.py generate-graph
 
 It will open a browser window where you can examine the graph
+
+## Command reference
+```
+Usage: script.py [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  generate-graph
+  refresh-data
+
+
+Usage: script.py refresh-data [OPTIONS]
+
+Options:
+  --host TEXT             The mariadb/mysql host address
+  --user TEXT             The mariadb/mysql user name
+  --password TEXT         The mariadb/mysql user password
+  --database TEXT         The mariadb/mysql database
+  --tablename TEXT        The database table containing your connection
+                          logging
+  --filename TEXT         Where the database data is stored
+  --startdate [%Y-%m-%d]  The starting date from which to generate the
+                          playtime statistics
+  --help                  Show this message and exit.
+
+Usage: script.py generate-graph [OPTIONS]
+
+Options:
+  --filename TEXT  Where the database data is stored
+  --help           Show this message and exit.
+```
