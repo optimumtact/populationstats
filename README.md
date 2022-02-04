@@ -15,6 +15,7 @@ First you need to refresh the local data from the repository
 The script will prompt you for any required remaining values
 
 Once this completes, you will have a local pickle file with the data from the database, now you can generate a graph using
+    
     poetry run python populationstats/script.py generate-graph
 
 It will open a browser window where you can examine the graph
