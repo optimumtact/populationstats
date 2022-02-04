@@ -8,15 +8,15 @@ Install poetry https://python-poetry.org/docs/#installation
     poetry run python populationstats/script.py 
 
 ## Usage
-First you need to refresh the local data from the repository
+First you need to refresh the local data from your servers database
 
-    poetry run python populationstats/script.py refresh-data --host 172.28.4.21 --user <youruser> --database <yourdatabase>
+    poetry run python populationstats/script.py refresh-data
 
-The script will prompt you for any required remaining values
+The script will prompt you for any required remaining values, but you can also pass them as options
 
 Once this completes, you will have a local pickle file with the data from the database, now you can generate a graph using
     
-    poetry run python populationstats/script.py generate-graph
+    poetry run python populationstats/script.py show-graph
 
 It will open a browser window where you can examine the graph
 
