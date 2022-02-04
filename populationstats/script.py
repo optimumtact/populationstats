@@ -10,9 +10,8 @@ from dateutil.relativedelta import relativedelta
 
 @click.group()
 def cli():
-    click.echo(f"Processing")
+    pass
 
-    
 @cli.command()
 @click.option('--host', prompt='Host', help='The mariadb/mysql host address')
 @click.option('--user', prompt='User', help='The mariadb/mysql user name')
@@ -20,9 +19,9 @@ def cli():
 @click.option('--database', prompt='Database', help='The mariadb/mysql database')
 @click.option('--tablename', default='connection_log', help='The database table containing your connection logging')
 @click.option('--filename', default='data.pickle', help='Where the database data is stored')
-@click.option('--startdate', type=click.DateTime(formats=["%Y-%m-%d"]), prompt='Enter the date from where to start collecting data', help='The starting date from which to generate the playtime statistics')
+@click.option('--startdate', type=click.DateTime(formats=["%Y-%m-%d"]), default="2018-01-01", help='The starting date from which to generate the playtime statistics')
 def refresh_data(host, user, password, database, tablename, filename, startdate):
-    click.echo("Refreshing local data from database, starting from {startdate}")
+    click.echo(f"Refreshing local data from database, starting from {startdate}")
     connection = pymysql.connect(
             host=host,
             user=user,
@@ -33,7 +32,7 @@ def refresh_data(host, user, password, database, tablename, filename, startdate)
             sql = f'''
                 WITH login_log AS
                 (
-                    SELECT ckey, TIMESTAMPDIFF(MONTH, '{startdate.strftime("%Y-%m-%d")}', DATETIME) AS login_month
+                    SELECT distinct(ckey), TIMESTAMPDIFF(MONTH, '{startdate.strftime("%Y-%m-%d")}', DATETIME) AS login_month
                     FROM {tablename}
                     GROUP BY 1,2
                     ORDER BY 1,2
@@ -63,7 +62,6 @@ def refresh_data(host, user, password, database, tablename, filename, startdate)
                 FROM player_categorized
                 GROUP BY 1, 2
                 '''
-            
             cursor.execute(sql)
             result = cursor.fetchall()
             data = {
