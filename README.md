@@ -22,14 +22,16 @@ It will open a browser window where you can examine the graph
 
 ## Command reference
 ```
+python populationstats/script.py
 Usage: script.py [OPTIONS] COMMAND [ARGS]...
 
 Options:
   --help  Show this message and exit.
 
 Commands:
-  generate-graph
-  refresh-data
+  refresh-data  Grab the latest connection records from your database,...
+  save-graph    Crunch the local data and write to an html file for...
+  show-graph    Crunch the local data and open the resulting plotly plot...
 
 
 Usage: script.py refresh-data [OPTIONS]
@@ -46,7 +48,18 @@ Options:
                           playtime statistics
   --help                  Show this message and exit.
 
-Usage: script.py generate-graph [OPTIONS]
+Usage: script.py save-graph [OPTIONS]
+
+  Crunch the local data and write to an html file for display on the web
+
+Options:
+  --filename TEXT         Where the database data is stored
+  --target-filename TEXT  Where to write the html page for the plot
+  --help                  Show this message and exit.
+
+Usage: script.py show-graph [OPTIONS]
+
+  Crunch the local data and open the resulting plotly plot in your browser
 
 Options:
   --filename TEXT  Where the database data is stored

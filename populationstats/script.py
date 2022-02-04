@@ -1,6 +1,7 @@
 import pymysql
 import click
 import plotly.express as px
+import plotly
 import pandas as pd
 import pickle
 from dateutil.relativedelta import relativedelta
@@ -19,7 +20,8 @@ def cli():
 @click.option('--filename', default='data.pickle', help='Where the database data is stored')
 @click.option('--startdate', type=click.DateTime(formats=["%Y-%m-%d"]), default="2018-01-01", help='The starting date from which to generate the playtime statistics')
 def refresh_data(host, user, password, database, tablename, filename, startdate):
-    click.echo(f"Refreshing local data from database, starting from {startdate}")
+    """ Grab the latest connection records from your database, storing locally so you can generate graphs from it"""
+    click.echo(f"Refreshing local data from database")
     connection = pymysql.connect(
             host=host,
             user=user,
@@ -71,21 +73,37 @@ def refresh_data(host, user, password, database, tablename, filename, startdate)
 
 @cli.command()
 @click.option('--filename', default='data.pickle', help='Where the database data is stored')
-def generate_graph(filename):
-    with open(filename, 'rb') as f:  # Python 3: open(..., 'rb')
-        data = pickle.load(f)
-    startdate = data['startdate']
-    result = data['results']
-    
-    #graph calculation
-    data = pd.DataFrame.from_records(result, columns = ['Month', 'Series', 'Data'])
-    totals = data.groupby(by="Month")["Data"].sum()
-    for month, total in totals.iteritems():
-        data.loc[len(data.index)] = [month, 'Total', total]
-    data["Date"] = data.apply(calculate_date, 1, args=[startdate])
+def show_graph(filename):
+    """Crunch the local data and open the resulting plotly plot in your browser"""
+    data = load_and_process(filename)
     fig = px.line(data, x="Date", y="Data", color="Series")
     
     fig.show()
+
+@cli.command()
+@click.option('--filename', default='data.pickle', help='Where the database data is stored')
+@click.option('--target-filename', default='population.html', help='Where to write the html page for the plot')
+def save_graph(filename, target_filename):
+    """Crunch the local data and write to an html file for display on the web"""
+    data = load_and_process(filename)
+    fig = px.line(data, x="Date", y="Data", color="Series")
+    with open(target_filename, 'w') as target_file:
+        target_file.write(plotly.io.to_html(fig))
+
+
+def load_and_process(filename):
+    with open(filename, 'rb') as f:  # Python 3: open(..., 'rb')
+        data = pickle.load(f)
+        startdate = data['startdate']
+        result = data['results']
+    
+        #graph calculation
+        data = pd.DataFrame.from_records(result, columns = ['Month', 'Series', 'Data'])
+        totals = data.groupby(by="Month")["Data"].sum()
+        for month, total in totals.iteritems():
+            data.loc[len(data.index)] = [month, 'total', total]
+        data["Date"] = data.apply(calculate_date, 1, args=[startdate])
+        return data
 
 def calculate_date(row, startdate):
     return startdate + relativedelta(months=row.Month)
