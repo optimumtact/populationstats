@@ -18,10 +18,10 @@ def cli():
 @click.option('--user', prompt='User', help='The mariadb/mysql user name')
 @click.option('--password', prompt='Password', help='The mariadb/mysql user password')
 @click.option('--database', prompt='Database', help='The mariadb/mysql database')
-@click.option('--prefix', default='', help='The database prefix if one is used')
+@click.option('--tablename', default='connection_log', help='The database table containing your connection logging')
 @click.option('--filename', default='data.pickle', help='Where the database data is stored')
 @click.option('--startdate', type=click.DateTime(formats=["%Y-%m-%d"]), prompt='Enter the date from where to start collecting data', help='The starting date from which to generate the playtime statistics')
-def refresh_data(host, user, password, database, prefix, filename, startdate):
+def refresh_data(host, user, password, database, tablename, filename, startdate):
     click.echo("Refreshing local data from database, starting from {startdate}")
     connection = pymysql.connect(
             host=host,
@@ -34,7 +34,7 @@ def refresh_data(host, user, password, database, prefix, filename, startdate):
                 WITH login_log AS
                 (
                     SELECT ckey, TIMESTAMPDIFF(MONTH, '{startdate.strftime("%Y-%m-%d")}', DATETIME) AS login_month
-                    FROM {prefix}connection_log
+                    FROM {tablename}
                     GROUP BY 1,2
                     ORDER BY 1,2
                 ),
